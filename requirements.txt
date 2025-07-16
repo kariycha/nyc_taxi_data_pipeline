@@ -1,3 +1,4 @@
+pyarrow
 pandas
 boto3
 requests

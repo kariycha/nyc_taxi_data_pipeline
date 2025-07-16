@@ -1,26 +1,85 @@
+"""
+download_data.py
+
+This script downloads a Parquet file of NYC Yellow and Green Taxi trip data from a remote URL
+(e.g., GitHub or public S3), loads it into a Pandas DataFrame, and saves it
+locally in the 'data/' directory for further processing. Logs messages with rotation.
+
+Intended as part of a data engineering pipeline that includes transformation,
+upload to S3, and querying with Athena.
+
+Includes error handling for:
+- Invalid or unreachable URL
+- Directory creation issues
+- File read/write errors
+
+Author: CK
+Created: 2025-07-15
+"""
+
 import os
-import requests
-import gzip
-import shutil
+import sys
+import logging
+from logging.handlers import RotatingFileHandler
+import urllib.error
+import pyarrow.parquet as pq
+import pandas as pd
+from datetime import datetime
 
-# Create data folder if it doesn't exist
-os.makedirs("data", exist_ok=True)
+# === Configurations ===
+PARQUET_URL = "https://github.com/kariycha/nyc_taxi_data_pipeline/tree/main/data"
+DATA_DIR = "data"
+LOG_DIR = "logs"
+LOG_FILE = os.path.join(LOG_DIR, "download.log")
 
-# File URL and paths
-url = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2023-01.csv.gz"
-csv_gz_path = "data/yellow_tripdata_2023-01.csv.gz"
-csv_path = "data/yellow_tripdata_2023-01.csv"
+# === LOGGING SETUP ===
+def setup_logger():
+    os.makedirs(LOG_DIR, exist_ok=True)
 
-# Download the file
-print("Downloading data...")
-response = requests.get(url, stream=True)
-with open(csv_gz_path, "wb") as f:
-    shutil.copyfileobj(response.raw, f)
-print(f"Downloaded to {csv_gz_path}")
+    logger = logging.getLogger("downloader")
+    logger.setLevel(logging.INFO)
 
-# Extract the file
-print("Extracting...")
-with gzip.open(csv_gz_path, "rb") as f_in:
-    with open(csv_path, "wb") as f_out:
-        shutil.copyfileobj(f_in, f_out)
-print(f"Extracted to {csv_path}")
+    handler = RotatingFileHandler(
+        LOG_FILE, maxBytes=1_000_000, backupCount=2  # 1MB max, keep 2 logs
+    )
+    formatter = logging.Formatter(
+        fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
+    return logger
+
+def main():
+    # Create or Get the logfile
+    logger = setup_logger()
+
+    # Create data folder if it doesn't exist
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+    except OSError as e:
+        logger.error(f"[ERROR] Failed to create/access directory '{DATA_DIR}': {e}")
+        sys.exit(1)
+
+
+    # Reading directly into dataframe using pyarrow
+    url = r"http://github.com/kariycha/nyc_taxi_data_pipeline/tree/main/data/"
+    try:
+        logger.info(f"[INFO] Downloading Parquet file from URL: {PARQUET_URL}")
+        taxi_df = pd.read_parquet(PARQUET_URL, engine="pyarrow")
+    except (urllib.error.URLError, FileNotFoundError, OSError, ValueError) as e:
+        logger.info(f"[ERROR] Failed to download or read Parquet file: {e}")
+        sys.exit(1)
+
+    try:
+        # Save locally
+        timestamp = datetime.now().strftime("%Y_%m_%d_%H%M%S")
+        output_filename = os.path.join(DATA_DIR, f"taxi_tripdata_{timestamp}.parquet")
+        taxi_df.to_parquet(f"{output_filename}", engine="pyarrow", compression="snappy")
+        print(f"[SUCCESS] Parquet file downloaded and saved locally: {output_filename}")
+    except Exception as e:
+        logger.error(f"[ERROR] Failed to save file locally '{DATA_DIR}': {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
