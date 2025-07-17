@@ -1,100 +1,116 @@
-# NYC Taxi Data Pipeline on AWS
+NYC Taxi Data Pipeline
 
-This project demonstrates a simple yet production-style data engineering pipeline using **AWS services**, **Python**, and **SQL**. The pipeline ingests raw NYC taxi trip data, transforms it using `pandas`, stores it in Amazon S3, and queries it with Amazon Athena.
+This project is a modular, production-ready data engineering pipeline that downloads, transforms, and uploads NYC Taxi data. It is designed to mimic a real-world data pipeline suitable for AWS S3 + Athena querying.
 
----
+🧩 Components
 
-## 🚀 Features
-- Ingests open-source NYC taxi data
-- Cleans and transforms CSV using Python + Pandas
-- Uploads data to Amazon S3
-- Queries data using Amazon Athena
-- Easily extendable to use Glue, Lambda, or CI/CD workflows
+Script
 
----
+Description
 
-## 📁 Project Structure
-```
-aws_data_pipeline/
-├── data/                        # Optional: Local raw/cleaned files
-├── scripts/
-│   ├── download_data.py        # Downloads NYC taxi CSV data
-│   ├── transform_data.py       # Cleans & transforms raw data
-│   └── upload_to_s3.py         # Uploads cleaned data to S3
-├── sql/
-│   └── create_athena_table.sql # DDL for creating Athena external table
-├── .gitignore
-├── README.md
-└── requirements.txt
-```
+download_data.py
 
----
+Downloads Parquet files from a GitHub folder using the GitHub API and combines them locally.
 
-## 🧰 Tools & Services
-- Python 3.7
-- Pandas
-- Boto3 (AWS SDK for Python)
-- Amazon S3
-- Amazon Athena
-- AWS CLI
+transform_data.py
 
----
+Cleans and transforms the Parquet files (e.g., datetime handling, nulls).
 
-## ⚙️ Setup Instructions
+upload_to_s3.py
 
-### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+Uploads transformed files to a specified S3 bucket.
 
-### 2. Configure AWS Credentials
-```bash
-aws configure
-# Enter AWS Access Key, Secret, and region (e.g. ap-southeast-2)
-```
+main_pipeline.py
 
-### 3. Run Scripts
-```bash
-# Step 1: Download raw data\python scripts/download_data.py
+Orchestrates the entire workflow (download → transform → upload).
 
-# Step 2: Transform data
-python scripts/transform_data.py
+logger_setup.py
 
-# Step 3: Upload to S3
-python scripts/upload_to_s3.py
-```
+Configures rotating file-based logging shared by all modules.
 
-### 4. Create Athena Table
-Run the SQL in `sql/create_athena_table.sql` using the AWS Athena console or `boto3`.
+🛠️ Requirements
 
----
+Python 3.11+
 
-## 📊 Example Queries
-```sql
-SELECT VendorID, COUNT(*) as trip_count
-FROM nyc_taxi_data
-GROUP BY VendorID;
-```
+AWS credentials set up locally (via ~/.aws/credentials, environment variables, or IAM Role)
 
----
+Python packages:
 
-## 📌 Resume Bullet Point Example
-> Built an AWS-based ETL pipeline to ingest NYC taxi data, transform with Python, and load to S3 for querying via Athena. Developed modular scripts for ingestion, transformation, and storage. Documented pipeline and followed CI/CD principles for automation-readiness.
+pip install pandas pyarrow boto3 requests
 
----
+🗂️ Directory Structure
 
-## 📈 Future Enhancements
-- Add GitHub Actions CI pipeline
-- Convert CSV to Parquet for performance
-- Automate with AWS Glue or Apache Airflow
-- Integrate monitoring and alerting
+nyc_taxi_data_pipeline/
+├── data/
+│   ├── source/           # Original Parquet files (from GitHub)
+│   ├── processed/        # Transformed files ready for S3
+│   └── error/            # Files that failed during transformation
+├── logs/                 # Rotating log files
+├── download_data.py
+├── transform_data.py
+├── upload_to_s3.py
+├── main_pipeline.py
+├── logger_setup.py
+└── README.md
 
----
+🚀 How to Run the Pipeline
 
-## 👤 Author
-CK
+Ensure your AWS credentials are configured (see below).
 
----
+Run the entire pipeline:
 
-## 📝 License
-MIT
+python main_pipeline.py
+
+This will:
+
+Download Parquet files from GitHub (or any configured source)
+
+Clean and transform them
+
+Upload them to the configured S3 bucket
+
+🔐 AWS Credentials Setup
+
+Option 1: Environment Variables
+
+export AWS_ACCESS_KEY_ID=your_key
+export AWS_SECRET_ACCESS_KEY=your_secret
+export AWS_DEFAULT_REGION=ap-southeast-2
+
+Option 2: AWS CLI Profile (~/.aws/credentials)
+
+[default]
+aws_access_key_id = YOUR_KEY
+aws_secret_access_key = YOUR_SECRET
+
+🧪 Testing Individual Steps
+
+Run Download:
+
+python download_data.py
+
+Run Transform:
+
+python transform_data.py --input-dir data
+
+Run Upload:
+
+python upload_to_s3.py --bucket your-bucket-name --input-dir data/processed
+
+📋 Logging
+
+All logs are stored in the logs/ folder with log rotation (2 backups, 1MB each).
+
+📌 Notes
+
+GitHub API is used to fetch a dynamic list of .parquet files.
+
+PyArrow and pandas are used for efficient Parquet processing.
+
+AWS S3 key prefix is customizable.
+
+🧑 Author
+
+CK, 2025-Jul
+
+MIT License
