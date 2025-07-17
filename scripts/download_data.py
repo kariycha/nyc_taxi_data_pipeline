@@ -41,42 +41,24 @@ DATA_DIR = "data"
 LOG_DIR = "logs"
 LOG_FILE = "download.log"
 
-# === LOGGING SETUP ===
-'''
-def setup_logger():
-    os.makedirs(LOG_DIR, exist_ok=True)
-
-    logger = logging.getLogger("downloader")
-    logger.setLevel(logging.INFO)
-
-    handler = RotatingFileHandler(
-        LOG_FILE, maxBytes=1_000_000, backupCount=2  # 1MB max, keep 2 logs
-    )
-    formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)s | %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
-    )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    return logger
-'''
- # === Main Function ===
-def main():
+def download_parquet_files(output_dir=DATA_DIR, api_url=None, logger=None):
     # Create or Get the logfile
-    logger = logger_setup.setup_logger("downloader",LOG_FILE, LOG_DIR )
+    if not logger:
+        logger = logger_setup.setup_logger("downloader",LOG_FILE, LOG_DIR )
 
     # Create data folder if it doesn't exist
     try:
-        os.makedirs(DATA_DIR, exist_ok=True)
+        os.makedirs(output_dir, exist_ok=True)
     except OSError as e:
-        logger.error(f"[ERROR] Failed to create/access directory '{DATA_DIR}': {e}")
+        logger.error(f"[ERROR] Failed to create/access directory '{output_dir}': {e}")
         logger.info("Download terminated.")
         logger.info("-" * 120)
         sys.exit(1)
 
     # Get a list of all parquet files as GitHub only serves individual files 
     # via raw.githubusercontent.com
-    api_url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{FOLDER_PATH}?ref={BRANCH}"
+    if not api_url:
+        api_url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{FOLDER_PATH}?ref={BRANCH}"
     try:
         logger.info(f"[INFO] Querying GitHub API: {api_url}")
         response = requests.get(api_url)
@@ -92,10 +74,10 @@ def main():
     logger.info(f"Found {len(parquet_files)} Parquet files.")
 
     if not parquet_files:
-        logger.info("No Parquet files found in folder {api_url}.")
+        logger.info(f"No Parquet files found in folder {api_url}.")
         logger.info("Download completed.")
         logger.info("-" * 120)
-        return
+        return None
     
     # Read all Parquet files into DataFrames
     dfs = []
@@ -113,15 +95,16 @@ def main():
             sys.exit(1)
 
     # Combine and Save locally
+    output_filename = None
     if dfs:
         try:
             timestamp = datetime.now().strftime("%Y_%m_%d_%H%M%S")
-            output_filename = os.path.join(DATA_DIR, f"taxi_tripdata_{timestamp}.parquet")
+            output_filename = os.path.join(output_dir, f"taxi_tripdata_{timestamp}.parquet")
             taxi_df = pd.concat(dfs, ignore_index=True)
             taxi_df.to_parquet(output_filename, engine="pyarrow", compression="snappy")
             logger.info(f"[SUCCESS] Combined Parquet saved to: {output_filename}")
         except Exception as e:
-            logger.error(f"Failed to save file locally '{DATA_DIR}': {e}")
+            logger.error(f"Failed to save file locally '{output_dir}': {e}")
             logger.info("Download terminated.")
             logger.info("-" * 120)
             sys.exit(1)
@@ -130,6 +113,8 @@ def main():
 
     logger.info("Download completed.")
     logger.info("-" * 120)
-
+    return output_filename
+ 
+ # === Entry Point ===
 if __name__ == "__main__":
-    main()
+    download_parquet_files()
