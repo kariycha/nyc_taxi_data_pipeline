@@ -1,45 +1,55 @@
-NYC Taxi Data Pipeline
+# NYC Taxi Data Pipeline
 
 This project is a modular, production-ready data engineering pipeline that downloads, transforms, and uploads NYC Taxi data. It is designed to mimic a real-world data pipeline suitable for AWS S3 + Athena querying.
 
-🧩 Components
+----------
+
+## 🧩 Components
 
 Script
 
 Description
 
-download_data.py
+`download_data.py`
 
 Downloads Parquet files from a GitHub folder using the GitHub API and combines them locally.
 
-transform_data.py
+`transform_data.py`
 
 Cleans and transforms the Parquet files (e.g., datetime handling, nulls).
 
-upload_to_s3.py
+`upload_to_s3.py`
 
 Uploads transformed files to a specified S3 bucket.
 
-main_pipeline.py
+`main_pipeline.py`
 
 Orchestrates the entire workflow (download → transform → upload).
 
-logger_setup.py
+`logger_setup.py`
 
 Configures rotating file-based logging shared by all modules.
 
-🛠️ Requirements
+----------
 
-Python 3.11+
+## 🛠️ Requirements
 
-AWS credentials set up locally (via ~/.aws/credentials, environment variables, or IAM Role)
+-   Python 3.11+
+    
+-   AWS credentials set up locally (via `~/.aws/credentials`, environment variables, or IAM Role)
+    
+-   Python packages:
+    
+    ```
+    pip install pandas pyarrow boto3 requests
+    ```
+    
 
-Python packages:
+----------
 
-pip install pandas pyarrow boto3 requests
+## 🗂️ Directory Structure
 
-🗂️ Directory Structure
-
+```
 nyc_taxi_data_pipeline/
 ├── data/
 │   ├── source/           # Original Parquet files (from GitHub)
@@ -52,65 +62,93 @@ nyc_taxi_data_pipeline/
 ├── main_pipeline.py
 ├── logger_setup.py
 └── README.md
+```
 
-🚀 How to Run the Pipeline
+----------
 
-Ensure your AWS credentials are configured (see below).
+## 🚀 How to Run the Pipeline
 
-Run the entire pipeline:
+1.  **Ensure your AWS credentials are configured** (see below).
+    
+2.  **Run the entire pipeline**:
+    
 
+```
 python main_pipeline.py
+```
 
 This will:
 
-Download Parquet files from GitHub (or any configured source)
+-   Download Parquet files from GitHub (or any configured source)
+    
+-   Clean and transform them
+    
+-   Upload them to the configured S3 bucket
+    
 
-Clean and transform them
+----------
 
-Upload them to the configured S3 bucket
+## 🔐 AWS Credentials Setup
 
-🔐 AWS Credentials Setup
+### Option 1: Environment Variables
 
-Option 1: Environment Variables
-
+```
 export AWS_ACCESS_KEY_ID=your_key
 export AWS_SECRET_ACCESS_KEY=your_secret
 export AWS_DEFAULT_REGION=ap-southeast-2
+```
 
-Option 2: AWS CLI Profile (~/.aws/credentials)
+### Option 2: AWS CLI Profile (~/.aws/credentials)
 
+```
 [default]
 aws_access_key_id = YOUR_KEY
 aws_secret_access_key = YOUR_SECRET
+```
 
-🧪 Testing Individual Steps
+----------
 
-Run Download:
+## 🧪 Testing Individual Steps
 
+### Run Download:
+
+```
 python download_data.py
+```
 
-Run Transform:
+### Run Transform:
 
+```
 python transform_data.py --input-dir data
+```
 
-Run Upload:
+### Run Upload:
 
+```
 python upload_to_s3.py --bucket your-bucket-name --input-dir data/processed
+```
 
-📋 Logging
+----------
 
-All logs are stored in the logs/ folder with log rotation (2 backups, 1MB each).
+## 📋 Logging
 
-📌 Notes
+All logs are stored in the `logs/` folder with log rotation (2 backups, 1MB each).
 
-GitHub API is used to fetch a dynamic list of .parquet files.
+----------
 
-PyArrow and pandas are used for efficient Parquet processing.
+## 📌 Notes
 
-AWS S3 key prefix is customizable.
+-   GitHub API is used to fetch a dynamic list of `.parquet` files.
+    
+-   PyArrow and pandas are used for efficient Parquet processing.
+    
+-   AWS S3 key prefix is customizable.
+    
 
-🧑 Author
+----------
 
-CK, 2025-Jul
+## 🧑 Author
+
+**CK**, 2025-Jul
 
 MIT License
