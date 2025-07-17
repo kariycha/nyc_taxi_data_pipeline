@@ -5,9 +5,9 @@ This project is a modular, production-ready data engineering pipeline that downl
 ----------
 ## 📥 Data Source
 
-The NYC Taxi trip data was sourced from the official New York City Taxi & Limousine Commission (TLC).
+The NYC Taxi trip data was sourced from the official [New York City Taxi & Limousine Commission (TLC)](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page).
 
-These files were converted to Parquet format and hosted in a public GitHub repository as part of this data engineering project.
+These files were downloaded (Parquet format) and hosted in a public GitHub repository data/source as part of this data engineering project.
 
 ----------
 
