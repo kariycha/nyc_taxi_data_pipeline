@@ -3,6 +3,13 @@
 This project is a modular, production-ready data engineering pipeline that downloads, transforms, and uploads NYC Taxi data. It is designed to mimic a real-world data pipeline suitable for AWS S3 + Athena querying.
 
 ----------
+## 📥 Data Source
+
+The NYC Taxi trip data was sourced from the official [New York City Taxi & Limousine Commission (TLC)](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page).
+
+These files were downloaded (Parquet format) and hosted in a public GitHub repository data/source as part of this data engineering project.
+
+----------
 
 ## 🧩 Components
 
