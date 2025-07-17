@@ -1,10 +1,26 @@
-__pycache__/
-*.pyc
-*.csv
-*.json
+# AWS credentials and environment files
+.aws/
 .env
 *.env
-.aws/
-logs/
+
+# Local data outputs
 data/error/
 data/processed/
+__pycache__/
+data/*.parquet
+
+# Python artifacts
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Log files
+logs/
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
