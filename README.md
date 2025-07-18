@@ -149,6 +149,11 @@ python transform_data.py --input-dir data
 ```bash
 python upload_to_s3.py --bucket your-bucket-name --input-dir data/processed
 ```
+---
+
+## ⚠️ Workflow Execution
+
+This repository uses GitHub Actions for automation. The workflow is restricted and requires a manual trigger with confirmation to prevent accidental execution.
 
 ---
 
