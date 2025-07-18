@@ -9,7 +9,6 @@ on:
         required: true
 
 jobs:
-jobs:
   run_pipeline:
     if: github.event.inputs.confirm == 'YES'
     runs-on: ubuntu-latest
