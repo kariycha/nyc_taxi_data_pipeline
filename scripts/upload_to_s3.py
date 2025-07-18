@@ -25,7 +25,7 @@ import logger_setup
 DATA_DIR = "data/processed"
 LOG_DIR = "logs"
 LOG_FILE = "upload.log"
-S3_BUCKET = "kariycha-nyc-taxi-pipeline"
+S3_BUCKET = "XXXXX-nyc-taxi-pipeline"  # update with actually bucket name
 S3_PREFIX = "nyc_taxi/"  # Optional prefix in the bucket
 
 def upload_files_to_s3(bucket_name, input_dir=DATA_DIR, logger=None, s3_prefix=S3_PREFIX):

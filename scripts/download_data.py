@@ -103,6 +103,9 @@ def download_parquet_files(output_dir=DATA_DIR, api_url=None, logger=None):
             taxi_df = pd.concat(dfs, ignore_index=True)
             taxi_df.to_parquet(output_filename, engine="pyarrow", compression="snappy")
             logger.info(f"[SUCCESS] Combined Parquet saved to: {output_filename}")
+            output_csv_filename = os.path.join(DATA_DIR, f"taxi_tripdata_{timestamp}.csv")
+            taxi_df.to_csv(f"{output_csv_filename}")
+            logger.info(f"[SUCCESS] Parquet file downloaded and saved locally: {output_csv_filename}")
         except Exception as e:
             logger.error(f"Failed to save file locally '{output_dir}': {e}")
             logger.info("Download terminated.")

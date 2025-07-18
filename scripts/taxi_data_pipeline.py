@@ -24,7 +24,7 @@ LOG_DIR = "logs"
 PIPELINE_LOG_FILE = "tax_data_pipeline.log"
 DATA_DIR = "data"
 PROCESSED_SUBDIR = "processed"
-S3_BUCKET = "kariycha-nyc-taxi-pipeline" 
+S3_BUCKET = "XXXXX-nyc-taxi-pipeline"  # update with actually bucket name
 S3_PREFIX = "nyc_taxi/"
 
 
