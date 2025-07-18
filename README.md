@@ -7,7 +7,7 @@ This project is a modular, production-ready data engineering pipeline that downl
 ## Pipeline Architecture Diagram
 
            +------------------------+
-           |   GitHub Repo (Source)|
+           |   GitHub Repo (Source) |
            +------------------------+
                         |
                         v
@@ -37,6 +37,8 @@ This project is a modular, production-ready data engineering pipeline that downl
            +----------------------------+
            | Dashboards + Analysis      |
            +----------------------------+
+
+---
 
 
 ## 📥 Data Source
