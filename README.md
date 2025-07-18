@@ -4,7 +4,7 @@ This project is a modular, production-ready data engineering pipeline that downl
 
 ---
 
-## Pipeline Architecture Diagram
+## 🗺️ Pipeline Architecture Diagram
 
            +------------------------+
            |   GitHub Repo (Source) |
