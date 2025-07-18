@@ -4,7 +4,40 @@ This project is a modular, production-ready data engineering pipeline that downl
 
 ---
 
----
+## Pipeline Architecture Diagram
+
+           +------------------------+
+           |   GitHub Repo (Source)|
+           +------------------------+
+                        |
+                        v
+          +-----------------------------+
+          |  download_data.py           |
+          |  Fetch + combine Parquet    |
+          +-----------------------------+
+                        |
+                        v
+          +-----------------------------+
+          | transform_data.py           |
+          | Clean + prepare for S3      |
+          +-----------------------------+
+                        |
+                        v
+          +-----------------------------+
+          | upload_to_s3.py             |
+          | Store in AWS S3             |
+          +-----------------------------+
+                        |
+                        v
+           +----------------------------+
+           | AWS Athena (SQL Queries)   |
+           +----------------------------+
+                        |
+                        v
+           +----------------------------+
+           | Dashboards + Analysis      |
+           +----------------------------+
+
 
 ## 📥 Data Source
 
